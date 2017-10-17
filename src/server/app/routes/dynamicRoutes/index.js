@@ -5,7 +5,13 @@ var debug = require('debug')('stateful-api-mock-server:app:routes:dynamicRoutes'
 var constructRoutes = function(items) {
   var options = Libs.options.get();
 
-  items.forEach(function(item) {
+  items.forEach(add);
+  items.forEach(function(item){
+    item.route = item.route.replace(/\\/gi, '/');
+  });
+  items.forEach(add);
+
+  function add(item) {
     Libs.state._init(item.route, item.verb);
 
     router[item.verb](item.route, function(req, res, next) { //eslint-disable-line no-unused-vars
@@ -60,7 +66,7 @@ var constructRoutes = function(items) {
         res.send(require(item.file));
       }
     });
-  });
+  }
 
   debug(Libs.state.getAll());
 
